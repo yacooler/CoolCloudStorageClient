@@ -1,6 +1,8 @@
 package netty;
 
 
+import fileobjects.FileInformation;
+import fileobjects.FileList;
 import frames.BaseFrame;
 import frames.CommandCSNewClient;
 import io.netty.bootstrap.Bootstrap;
@@ -19,6 +21,8 @@ import javafx.concurrent.Task;
 import javafx.util.Callback;
 
 import java.io.OutputStream;
+import java.nio.file.Path;
+import java.util.function.Consumer;
 
 
 public class NettyClient extends Task<Void> {
@@ -81,7 +85,7 @@ public class NettyClient extends Task<Void> {
                                 public void channelRead(ChannelHandlerContext ctx, Object msg) {
                                     BaseFrame response;
                                     BaseFrame command;
-                                    System.out.println(Thread.currentThread());
+                                    //System.out.println(Thread.currentThread());
                                     //Если пока не подключен обработчик события - ничего не делаем
                                     if (receivedMessageHandler == null) return;
 
@@ -89,7 +93,7 @@ public class NettyClient extends Task<Void> {
                                         command = (BaseFrame) msg;
                                         response = receivedMessageHandler.call(command);
                                         if (response != null) {
-                                            System.out.println(response);
+                                            //System.out.println(response);
                                             ctx.writeAndFlush(response);
                                         }
                                     } else {
@@ -140,5 +144,71 @@ public class NettyClient extends Task<Void> {
         return (authorizationLoop.isAuthorized());
     }
 
+    /**
+     *Запрос списка файлов из удаленной директории относительно корня
+     */
 
+    public FileList getRemoteFileList(String relativePath){
+        GetRemoteFileList getRemoteFileList = new GetRemoteFileList(currentHandlerContext);
+        setReceivedMessageHandler(getRemoteFileList);
+        getRemoteFileList.request(relativePath);
+
+        System.out.println("Запустили получение списка файлов " + Thread.currentThread());
+        while (!getRemoteFileList.isReady()){
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException interruptedException) {
+                interruptedException.printStackTrace();
+            }
+        }
+
+        return getRemoteFileList.getFileList();
+
+    }
+
+
+    /**
+     * Получение файла с удаленного сервера на локальный компьютер
+     */
+    public boolean getRemoteFile(String relativePath, Path destinationDir, Consumer<Double> progress){
+        GetRemoteFile getRemoteFile = new GetRemoteFile(currentHandlerContext);
+        setReceivedMessageHandler(getRemoteFile);
+        getRemoteFile.request(relativePath, destinationDir);
+        System.out.println("Запустили получение файла " + Thread.currentThread());
+
+        while (!getRemoteFile.isReady()){
+            try {
+                Thread.sleep(100);
+                progress.accept(getRemoteFile.getProgress());
+            } catch (InterruptedException interruptedException) {
+                interruptedException.printStackTrace();
+            }
+        }
+
+        return true;
+    }
+
+
+    /**
+     * Получение файла с локального компьютера на текущий
+     */
+    public boolean postFileRemote(Path localFile, String remoteDirectory){
+
+        PostRemoteFile postRemoteFile = new PostRemoteFile(currentHandlerContext);
+        setReceivedMessageHandler(postRemoteFile);
+
+        postRemoteFile.request(localFile, remoteDirectory);
+        System.out.println("Запустили отправку файла " + Thread.currentThread());
+
+        while (!postRemoteFile.isReady()){
+            try {
+                Thread.sleep(100);
+                //progress.accept(getRemoteFile.getProgress());
+            } catch (InterruptedException interruptedException) {
+                interruptedException.printStackTrace();
+            }
+        }
+
+        return true;
+    }
 }

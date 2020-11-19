@@ -18,8 +18,12 @@
         <Button maxWidth="Infinity" focusTraversable="false" text="Копировать" HBox.hgrow="ALWAYS" onAction="#btnCopyAction"/>
         <Button maxWidth="Infinity" focusTraversable="false" text="Вставить" HBox.hgrow="ALWAYS" />
         <Button maxWidth="Infinity" focusTraversable="false" text="Удалить" HBox.hgrow="ALWAYS" onAction="#btnExitAction"/>
-      <padding>
-         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-      </padding>
+        <padding>
+            <Insets bottom="5.0" top="5.0" />
+        </padding>
     </HBox>
+    <ProgressBar fx:id="progressBar" maxWidth="Infinity" progress="0.0"/>
+    <padding>
+        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+    </padding>
 </VBox>

@@ -1,6 +1,8 @@
 package controllers;
 
+import com.sun.xml.internal.bind.v2.runtime.reflect.Lister;
 import fileobjects.FileInformation;
+import fileobjects.FileList;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
@@ -15,10 +17,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class FilePanelController implements Initializable {
+
+    private Consumer<Path> onEnterIntoDirectory;
+    private Consumer<Path> onExitFromDirectory;
 
     @FXML
     TableView<FileInformation> filesTable;
@@ -66,14 +73,21 @@ public class FilePanelController implements Initializable {
 
 
         fileLastModifiedColumn.setCellValueFactory(
-                fileInfo -> new SimpleStringProperty(
-                        fileInfo.getValue().getLastModified().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))));
+                fileInfo ->
+                    new SimpleStringProperty(
+                     (fileInfo.getValue().getLastModified() == null) ?
+                     "" : fileInfo.getValue().getLastModified().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                );
+
         fileLastModifiedColumn.setPrefWidth(200);
 
         filesTable.getColumns().addAll(fileTypeColumn, fileNameColumn, fileSizeColumn, fileLastModifiedColumn);
 
+    }
 
-        updateList(Paths.get("."));
+    public void updateList(FileList fileList){
+        filesTable.getItems().clear();
+        filesTable.getItems().addAll(fileList.getFiles());
     }
 
     public void updateList(Path path){
@@ -91,10 +105,11 @@ public class FilePanelController implements Initializable {
     }
 
     public void btnPathUpAction(ActionEvent actionEvent) {
+        if (Paths.get(pathField.getText()) == null) return;
         Path upperPath = Paths.get(pathField.getText()).getParent();
-        if (upperPath != null){
-            updateList(upperPath);
-        }
+        if (upperPath == null) upperPath = Paths.get("");
+        onExitFromDirectory.accept(upperPath);
+        pathField.setText(upperPath.toString());
     }
 
     public void tblMouseClicked(MouseEvent mouseEvent) {
@@ -102,7 +117,9 @@ public class FilePanelController implements Initializable {
             FileInformation selectedItem = filesTable.getSelectionModel().getSelectedItem();
             if (selectedItem.getType() == FileInformation.FileType.DIRECTORY) {
                 Path path = Paths.get(pathField.getText()).resolve(selectedItem.getName());
-                updateList(path);
+                System.out.println("Путь для consumer.accept " + path.toString());
+                onEnterIntoDirectory.accept(path);
+                pathField.setText(path.toString());
             }
         }
     }
@@ -114,6 +131,14 @@ public class FilePanelController implements Initializable {
 
     public String getCurrentPath(){
         return pathField.getText();
+    }
+
+    public void onEnterDirectory(Consumer<Path> newPathConsumer){
+        onEnterIntoDirectory = newPathConsumer;
+    }
+
+    public void setOnExitFromDirectory(Consumer<Path> newPathConsumer){
+        onExitFromDirectory = newPathConsumer;
     }
 
 }

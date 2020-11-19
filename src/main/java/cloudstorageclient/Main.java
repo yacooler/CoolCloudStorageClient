@@ -1,5 +1,6 @@
 package cloudstorageclient;
 
+import controllers.FileManagerController;
 import controllers.LoginController;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -18,12 +19,21 @@ public class Main extends Application {
     private NettyClient nettyClient;
 
     private void fileManagerStage(Stage primaryStage){
-        Parent root = null;
         try {
-            root = FXMLLoader.load(getClass().getResource("/filemanager.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/filemanager.fxml"));
+            Stage login = new Stage();
+
+            Parent root = fxmlLoader.load();
+
+            FileManagerController controller = fxmlLoader.getController();
+            controller.setNettyClient(nettyClient);
+
             primaryStage.setTitle("File manager");
             primaryStage.setScene(new Scene(root, 800, 600));
             primaryStage.show();
+
+            controller.start();
+
         } catch (IOException e) {
             throw new RuntimeException("Не удалось загрузить сцену файлменеджера", e);
         }
@@ -61,10 +71,10 @@ public class Main extends Application {
         nettyClient = new NettyClient("localhost", 8189);
         new Thread(nettyClient).start();
 
-        fileManagerStage(primaryStage);
         if (!loginStage(primaryStage)){
             Platform.exit();
         };
+        fileManagerStage(primaryStage);
     }
 
 

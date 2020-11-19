@@ -1,5 +1,8 @@
 package fileobjects;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Files;
@@ -24,54 +27,45 @@ public class FileInformation implements Serializable {
         }
     }
 
+    @Getter @Setter
     private String name;
+
+    @Getter @Setter
     private long size;
+
+    @Getter @Setter
     private FileType type;
+
+    @Getter @Setter
     private LocalDateTime lastModified;
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public long getSize() {
-        return size;
-    }
-
-    public void setSize(long size) {
-        this.size = size;
-    }
-
-    public FileType getType() {
-        return type;
-    }
-
-    public void setType(FileType type) {
-        this.type = type;
-    }
-
-    public LocalDateTime getLastModified() {
-        return lastModified;
-    }
-
-    public void setLastModified(LocalDateTime lastModified) {
-        this.lastModified = lastModified;
-    }
 
     public FileInformation(Path path){
         try {
-            this.name = path.getFileName().toString();
-            this.size = Files.size(path);
-            this.type = Files.isDirectory(path) ? FileType.DIRECTORY : FileType.FILE;
-            if (this.type == FileType.DIRECTORY) this.size = -1;
-            this.lastModified = LocalDateTime.ofInstant(Files.getLastModifiedTime(path).toInstant(), ZoneId.systemDefault());
+            if (path.getFileName() == null) {
+                this.name = path.getRoot().toString();
+                this.type = FileType.DIRECTORY;
+                this.size = -1L;
+            } else {
+                this.name = path.getFileName().toString();
+                this.size = Files.size(path);
+                this.type = Files.isDirectory(path) ? FileType.DIRECTORY : FileType.FILE;
+                if (this.type == FileType.DIRECTORY) this.size = -1L;
+                this.lastModified = LocalDateTime.ofInstant(Files.getLastModifiedTime(path).toInstant(), ZoneId.systemDefault());
+            }
         } catch (IOException e) {
             throw new RuntimeException("Не удалось прочитать файл " + path.toString(), e);
         }
     }
 
-
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("FileInformation{");
+        sb.append("name='").append(name).append('\'');
+        sb.append(", size=").append(size);
+        sb.append(", type=").append(type);
+        sb.append(", lastModified=").append(lastModified);
+        sb.append('}');
+        return sb.toString();
+    }
 }
