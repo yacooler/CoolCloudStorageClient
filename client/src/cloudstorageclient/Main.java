@@ -1,7 +1,6 @@
 package cloudstorageclient;
 
-import controllers.FileManagerController;
-import controllers.LoginController;
+import controllers.*;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;

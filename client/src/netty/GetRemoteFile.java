@@ -1,6 +1,6 @@
 package netty;
 
-import fileobjects.FileInformation;
+
 import frames.BaseFrame;
 import frames.CommandCSGetFile;
 import frames.DataFrame;

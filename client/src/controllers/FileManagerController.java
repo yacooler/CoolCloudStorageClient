@@ -1,6 +1,5 @@
 package controllers;
 
-
 import fileobjects.FileInformation;
 import fileobjects.FileList;
 import javafx.application.Platform;
@@ -10,7 +9,6 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.VBox;
 import netty.NettyClient;
 
-import java.io.IOException;
 import java.nio.file.*;
 
 

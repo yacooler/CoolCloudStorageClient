@@ -5,14 +5,13 @@ import frames.*;
 import io.netty.channel.ChannelHandlerContext;
 import javafx.util.Callback;
 
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
-public class PostRemoteFile extends BaseCommandHandler implements Callback<BaseFrame, BaseFrame>{
+public class PostRemoteFile extends BaseCommandHandler implements Callback<BaseFrame, BaseFrame> {
 
     private Path localFile;
     private String remoteDirectory;
