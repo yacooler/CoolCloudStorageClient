@@ -4,6 +4,7 @@ package cloudusers;
 import database.services.UserService;
 import io.netty.channel.Channel;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,7 +15,7 @@ import java.util.Map;
  */
 public class UserPool {
     //Хэшмапа соединений
-    private Map<Channel, CloudServerUser> users = new HashMap<>();
+    private Map<Channel, CloudServerUser> users = Collections.synchronizedMap(new HashMap<>());
 
     public Map<Channel, CloudServerUser> getUsers() {
         return users;
