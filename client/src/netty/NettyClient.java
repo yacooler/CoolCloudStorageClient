@@ -1,7 +1,6 @@
 package netty;
 
 
-import fileobjects.FileInformation;
 import fileobjects.FileList;
 import frames.BaseFrame;
 import frames.CommandCSNewClient;

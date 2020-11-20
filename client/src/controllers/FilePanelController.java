@@ -1,6 +1,5 @@
 package controllers;
 
-import com.sun.xml.internal.bind.v2.runtime.reflect.Lister;
 import fileobjects.FileInformation;
 import fileobjects.FileList;
 import javafx.beans.property.SimpleObjectProperty;
@@ -17,7 +16,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.format.DateTimeFormatter;
-import java.util.Collection;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -129,8 +127,8 @@ public class FilePanelController implements Initializable {
         return filesTable.getSelectionModel().getSelectedItem().getName();
     }
 
-    public String getCurrentPath(){
-        return pathField.getText();
+    public String getCurrentPath() {
+        return (pathField.getText().endsWith("\\") ? pathField.getText() : pathField.getText() + "\\");
     }
 
     public void onEnterDirectory(Consumer<Path> newPathConsumer){
