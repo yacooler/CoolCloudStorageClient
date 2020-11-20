@@ -16,6 +16,8 @@ public class FileList implements Serializable {
         files.add(fileInformation);
     }
 
+    public void addAll(List<FileInformation> list) {files.addAll(list);}
+
     public List<FileInformation> getFiles(){
         return files;
     }

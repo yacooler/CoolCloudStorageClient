@@ -127,8 +127,8 @@ public class FilePanelController implements Initializable {
         return filesTable.getSelectionModel().getSelectedItem().getName();
     }
 
-    public String getCurrentPath(){
-        return pathField.getText();
+    public String getCurrentPath() {
+        return (pathField.getText().endsWith("\\") ? pathField.getText() : pathField.getText() + "\\");
     }
 
     public void onEnterDirectory(Consumer<Path> newPathConsumer){
